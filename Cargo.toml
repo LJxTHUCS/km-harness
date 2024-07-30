@@ -1,0 +1,8 @@
+[package]
+name = "km-harness"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libafl_qemu_cmd = { git = "https://github.com/nine-point-eight-p/libafl_qemu_cmd" }
+serde = { version = "1.0.204", default-features = false }
