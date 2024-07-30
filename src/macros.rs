@@ -1,8 +1,8 @@
-//! Macros used to construct harness.
+//! Macros used to construct km_harness.
 
-/// Wrap a command as a harness command. Implement `Deref` and `serde::Deserialize`.
+/// Wrap a command as a km_harness command. Implement `Deref` and `serde::Deserialize`.
 ///
-/// Format: `harness_command!(mod1::mod2::..., cmd)`
+/// Format: `km_harness_command!(mod1::mod2::..., cmd)`
 /// 
 /// where `mod1::mod2::...::cmd` is the original definition of the command.
 #[macro_export]
@@ -49,7 +49,7 @@ macro_rules! executor {
     ) => {
         struct $ex;
 
-        impl harness::Executor for $ex {
+        impl km_harness::Executor for $ex {
             fn deser_and_exec(
                 &self,
                 buf: &[u8]
@@ -72,23 +72,23 @@ macro_rules! executor {
 /// Make a syscall with a variable number of arguments.
 #[macro_export]
 macro_rules! syscall {
-    ($id:expr) => { harness::syscall3($id, [0, 0, 0]) };
-    ($id:expr,$arg0:expr) => { harness::syscall3($id, [$arg0 as usize, 0, 0]) };
+    ($id:expr) => { km_harness::syscall3($id, [0, 0, 0]) };
+    ($id:expr,$arg0:expr) => { km_harness::syscall3($id, [$arg0 as usize, 0, 0]) };
     ($id:expr,$arg0:expr,$arg1:expr) => { 
-        harness::syscall3($id, [$arg0 as usize, $arg1 as usize, 0]) 
+        km_harness::syscall3($id, [$arg0 as usize, $arg1 as usize, 0]) 
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr) => { 
-        harness::syscall3($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize]) 
+        km_harness::syscall3($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize]) 
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr,$arg3:expr) => { 
-        harness::syscall6($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize, $arg3 as usize, 0, 0])
+        km_harness::syscall6($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize, $arg3 as usize, 0, 0])
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr,$arg3:expr,$arg4:expr) => { 
-        harness::syscall6($id, [$arg0 as usize, $arg1 as usize, 
+        km_harness::syscall6($id, [$arg0 as usize, $arg1 as usize, 
             $arg2 as usize, $arg3 as usize, $arg4 as usize, 0]) 
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr,$arg3:expr,$arg4:expr,$arg5:expr) => { 
-        harness::syscall6($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize, 
+        km_harness::syscall6($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize, 
             $arg3 as usize, $arg4 as usize, $arg5 as usize]) 
     };
 }
