@@ -1,7 +1,7 @@
 use core::arch::asm;
 
 /// Make a syscall with 3 arguments.
-pub fn syscall3(id: usize, args: [usize; 3]) -> isize { 
+pub fn syscall3(id: usize, args: [usize; 3]) -> isize {
     let mut ret: isize;
     unsafe {
         asm!(
@@ -32,4 +32,3 @@ pub fn syscall6(id: usize, args: [usize; 6]) -> isize {
     }
     ret
 }
-
