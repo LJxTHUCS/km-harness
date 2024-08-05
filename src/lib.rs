@@ -10,8 +10,10 @@ pub use harness::Harness;
 pub use port::{BufferPort, HarnessPort};
 pub use syscall::{syscall3, syscall6};
 
-/// Wrap a command as a harness command. Implement `Deref`.
-/// 
+/// Wrap a foreign-defined (typically `km_command`) command as a harness
+/// command (command that can be executed on the target kernel) .
+///  Implement `Deref`.
+///
 /// If `execute_fn` is provided, it will be used to implement `Command` trait.
 ///
 /// # Format
@@ -40,8 +42,12 @@ macro_rules! harness_command {
 
         impl Command for $cmd {
             fn execute(&self) -> isize {
-                /// Works as `self.field`
+                /// `get!()` => `self`; `get!(field)` => `self.field`
+                #[allow(unused_macros)]
                 macro_rules! get {
+                    () => {
+                        self
+                    };
                     ($field:ident) => {
                         self.$field
                     };
@@ -55,7 +61,7 @@ macro_rules! harness_command {
     };
 }
 
-/// Define and implement a command executor. 
+/// Define and implement a command executor.
 /// This macro requires `km-command` as dependency.
 ///
 /// Format: `executor!(Executor, cmd1, cmd2, ...)`,
