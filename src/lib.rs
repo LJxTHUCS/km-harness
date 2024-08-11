@@ -18,8 +18,8 @@ pub use syscall::{syscall3, syscall6};
 ///
 /// # Format
 ///
-/// - `km_harness_command!(mod1::mod2::..., cmd)`,
-/// - `km_harness_command!(mod1::mod2::..., cmd, { execute_fn })`
+/// - `harness_command!(mod1::mod2::..., cmd)`,
+/// - `harness_command!(mod1::mod2::..., cmd, { execute_fn })`
 #[macro_export]
 macro_rules! harness_command {
     ($($mod:ident)::*, $cmd:ident) => {
@@ -40,7 +40,7 @@ macro_rules! harness_command {
     ($($mod:ident)::*, $cmd:ident, $execute_fn:block) => {
         harness_command!($($mod)::*,$cmd);
 
-        impl Command for $cmd {
+        impl $crate::Command for $cmd {
             fn execute(&self) -> isize {
                 /// `get!()` => `self`; `get!(field)` => `self.field`
                 #[allow(unused_macros)]
@@ -70,7 +70,7 @@ macro_rules! executor {
     ($ex:ident, $($cmd:ident),*) => {
         struct $ex;
 
-        impl km_harness::Executor for $ex {
+        impl $crate::Executor for $ex {
             fn parse_and_execute(&self, buf: &[u8]) -> Result<isize, ()> {
                 let (id, remain) = km_command::id_from_bytes(buf);
                 match id {
@@ -91,19 +91,19 @@ macro_rules! executor {
 #[macro_export]
 macro_rules! syscall {
     ($id:expr) => {
-        km_harness::syscall3($id, [0, 0, 0])
+        $crate::syscall3($id, [0, 0, 0])
     };
     ($id:expr,$arg0:expr) => {
-        km_harness::syscall3($id, [$arg0 as usize, 0, 0])
+        $crate::syscall3($id, [$arg0 as usize, 0, 0])
     };
     ($id:expr,$arg0:expr,$arg1:expr) => {
-        km_harness::syscall3($id, [$arg0 as usize, $arg1 as usize, 0])
+        $crate::syscall3($id, [$arg0 as usize, $arg1 as usize, 0])
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr) => {
-        km_harness::syscall3($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize])
+        $crate::syscall3($id, [$arg0 as usize, $arg1 as usize, $arg2 as usize])
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr,$arg3:expr) => {
-        km_harness::syscall6(
+        $crate::syscall6(
             $id,
             [
                 $arg0 as usize,
@@ -116,7 +116,7 @@ macro_rules! syscall {
         )
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr,$arg3:expr,$arg4:expr) => {
-        km_harness::syscall6(
+        $crate::syscall6(
             $id,
             [
                 $arg0 as usize,
@@ -129,7 +129,7 @@ macro_rules! syscall {
         )
     };
     ($id:expr,$arg0:expr,$arg1:expr,$arg2:expr,$arg3:expr,$arg4:expr,$arg5:expr) => {
-        km_harness::syscall6(
+        $crate::syscall6(
             $id,
             [
                 $arg0 as usize,
