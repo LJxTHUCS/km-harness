@@ -7,7 +7,7 @@ mod syscall;
 
 pub use command::{Command, Executor};
 pub use harness::Harness;
-pub use port::{BufferPort, HarnessPort};
+pub use port::{MemCommandChannnel, CommandChannel};
 pub use syscall::{syscall3, syscall6};
 
 /// Wrap a foreign-defined (typically `km_command`) command as a harness
@@ -71,14 +71,14 @@ macro_rules! executor {
         struct $ex;
 
         impl $crate::Executor for $ex {
-            fn parse_and_execute(&self, buf: &[u8]) -> Result<isize, ()> {
+            fn parse_and_execute(&self, buf: &[u8]) -> isize {
                 let (id, remain) = km_command::id_from_bytes(buf);
                 match id {
                     $($cmd::ID => {
-                        let cmd = $cmd::from_bytes(remain).ok_or(())?;
-                        Ok(cmd.execute())
+                        let cmd = $cmd::from_bytes(remain).unwrap();
+                        cmd.execute()
                     },)*
-                    _ => return Err(()),
+                    _ => panic!("Unknown command: {}", id),
                 }
             }
         }
