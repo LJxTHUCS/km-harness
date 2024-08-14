@@ -7,7 +7,7 @@ mod syscall;
 
 pub use command::{Command, Executor};
 pub use harness::Harness;
-pub use port::{MemCommandChannnel, CommandChannel};
+pub use port::{HarnessPort, MemPort};
 pub use syscall::{syscall3, syscall6};
 
 /// Wrap a foreign-defined (typically `km_command`) command as a harness
@@ -41,7 +41,7 @@ macro_rules! harness_command {
         harness_command!($($mod)::*,$cmd);
 
         impl $crate::Command for $cmd {
-            fn execute(&self) -> isize {
+            fn execute(&self, output: &mut [u8]) -> isize {
                 /// `get!()` => `self`; `get!(field)` => `self.field`
                 #[allow(unused_macros)]
                 macro_rules! get {
@@ -52,10 +52,17 @@ macro_rules! harness_command {
                         self.$field
                     };
                 }
+                /// `data!()` => `data`;
+                #[allow(unused_macros)]
+                macro_rules! output {
+                    () => {
+                        output
+                    };
+                }
                 $execute_fn
             }
-            fn from_bytes(buf: &[u8]) -> Option<Self> {
-                $($mod)::*::$cmd::from_bytes(buf).map(|(cmd, _)| Self(cmd))
+            fn from_bytes(buf: &[u8]) -> Self {
+                Self($($mod)::*::$cmd::from_bytes(buf).unwrap().0)
             }
         }
     };
@@ -71,12 +78,12 @@ macro_rules! executor {
         struct $ex;
 
         impl $crate::Executor for $ex {
-            fn parse_and_execute(&self, buf: &[u8]) -> isize {
-                let (id, remain) = km_command::id_from_bytes(buf);
+            fn parse_and_execute(&self, cmd_buf: &[u8], output: &mut [u8]) -> isize {
+                let (id, remain) = km_command::id_from_bytes(cmd_buf);
                 match id {
                     $($cmd::ID => {
-                        let cmd = $cmd::from_bytes(remain).unwrap();
-                        cmd.execute()
+                        let cmd = $cmd::from_bytes(remain);
+                        cmd.execute(output)
                     },)*
                     _ => panic!("Unknown command: {}", id),
                 }
