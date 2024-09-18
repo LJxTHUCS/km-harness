@@ -8,6 +8,8 @@ mod syscall;
 pub use command::{Command, Executor};
 pub use harness::Harness;
 pub use port::{HarnessPort, MemPort};
+
+#[cfg(target_arch = "riscv64")]
 pub use syscall::{syscall3, syscall6};
 
 /// Wrap a foreign-defined (typically `km_command`) command as a harness
