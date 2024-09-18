@@ -1,6 +1,7 @@
 use core::arch::asm;
 
 /// Make a syscall with 3 arguments.
+#[cfg(target_arch = "riscv64")]
 pub fn syscall3(id: usize, args: [usize; 3]) -> isize {
     let mut ret: isize;
     unsafe {
@@ -16,6 +17,7 @@ pub fn syscall3(id: usize, args: [usize; 3]) -> isize {
 }
 
 /// Make a syscall with 6 arguments.
+#[cfg(target_arch = "riscv64")]
 pub fn syscall6(id: usize, args: [usize; 6]) -> isize {
     let mut ret: isize;
     unsafe {

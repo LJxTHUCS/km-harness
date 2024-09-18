@@ -52,7 +52,7 @@ macro_rules! harness_command {
                         self.$field
                     };
                 }
-                /// `data!()` => `data`;
+                /// `output!()` => `output`;
                 #[allow(unused_macros)]
                 macro_rules! output {
                     () => {
